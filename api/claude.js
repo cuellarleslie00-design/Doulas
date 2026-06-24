@@ -1,4 +1,3 @@
-api/claude.js
 // api/claude.js
 // Vercel serverless function — your ANTHROPIC_API_KEY lives here, never in the browser.
 
@@ -120,6 +119,6 @@ module.exports = async function handler(req, res) {
     if (err instanceof SyntaxError) {
       return res.status(500).json({ error: "Model returned unexpected format. Please try again." });
     }
-    return res.status(500).json({ error: "Error calling AI. Please try again." }); 
+    return res.status(500).json({ error: "Error calling AI. Please try again." });
   }
 };
