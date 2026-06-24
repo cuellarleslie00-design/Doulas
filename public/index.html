@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doula Contract Hub</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤝</text></svg>" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple-50: #EEEDFE; --purple-100: #CECBF6; --purple-600: #534AB7; --purple-800: #3C3489; --purple-900: #26215C;
+      --green-50: #EAF3DE; --green-800: #27500A;
+      --amber-50: #FAEEDA; --amber-400: #EF9F27; --amber-800: #633806;
+      --red-50: #FCEBEB; --red-400: #E24B4A; --red-600: #A32D2D; --red-800: #791F1F;
+      --teal-50: #E1F5EE; --teal-800: #085041;
+      --gray-50: #F1EFE8; --gray-200: #B4B2A9; --gray-600: #5F5E5A; --gray-800: #2C2C2A;
+      --bg: #ffffff; --bg-secondary: #F7F6F3; --bg-tertiary: #F1EFE8;
+      --text: #1a1a1a; --text-secondary: #5F5E5A; --text-tertiary: #888780;
+      --border: rgba(0,0,0,0.12); --border-strong: rgba(0,0,0,0.22);
+      --radius: 8px; --radius-lg: 12px; --radius-xl: 16px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1917; --bg-secondary: #232220; --bg-tertiary: #2c2b28;
+        --text: #F1EFE8; --text-secondary: #B4B2A9; --text-tertiary: #888780;
+        --border: rgba(255,255,255,0.1); --border-strong: rgba(255,255,255,0.2);
+      }
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-tertiary); color: var(--text); min-height: 100vh; }
+
+    /* Layout */
+    .header { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 0 2rem; display: flex; align-items: center; gap: 16px; height: 60px; position: sticky; top: 0; z-index: 10; }
+    .header-logo { width: 32px; height: 32px; background: var(--purple-600); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
+    .header h1 { font-size: 16px; font-weight: 600; color: var(--text); }
+    .header-sub { font-size: 12px; color: var(--text-tertiary); margin-left: 4px; }
+    .header-spacer { flex: 1; }
+    .header-state { font-size: 12px; background: var(--purple-50); color: var(--purple-800); padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+
+    .main { max-width: 820px; margin: 2rem auto; padding: 0 1.5rem; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 4px; margin-bottom: 1.5rem; width: fit-content; }
+    .tab { padding: 8px 20px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--text-secondary); border-radius: var(--radius); transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+    .tab.active { background: var(--purple-600); color: white; }
+    .tab:hover:not(.active) { background: var(--bg-secondary); color: var(--text); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Cards */
+    .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
+    .card-title { font-size: 15px; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+    .card-title i { color: var(--purple-600); }
+
+    /* Form */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 12px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+    input[type=text], select, textarea {
+      width: 100%; font-size: 14px; padding: 9px 12px; border: 0.5px solid var(--border-strong);
+      border-radius: var(--radius); background: var(--bg); color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s; outline: none; font-family: inherit;
+    }
+    input[type=text]:focus, select:focus, textarea:focus { border-color: var(--purple-600); box-shadow: 0 0 0 3px rgba(83,74,183,0.12); }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+    select[multiple] { height: 100px; }
+    .toggle-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .toggle-row label { text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--text); margin: 0; }
+    input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--purple-600); cursor: pointer; }
+    .help { font-size: 12px; color: var(--text-tertiary); margin-top: 5px; line-height: 1.5; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 14px; font-weight: 500; border-radius: var(--radius); cursor: pointer; border: none; transition: all 0.15s; font-family: inherit; }
+    .btn-primary { background: var(--purple-600); color: white; }
+    .btn-primary:hover:not(:disabled) { background: var(--purple-800); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary { background: var(--bg); color: var(--text); border: 0.5px solid var(--border-strong); }
+    .btn-secondary:hover { background: var(--bg-secondary); }
+
+    /* Loading */
+    .loading { display: none; align-items: center; gap: 10px; margin-top: 1rem; font-size: 14px; color: var(--text-secondary); }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--purple-600); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Results */
+    .result { margin-top: 1.25rem; }
+    .result-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 1.25rem; }
+    .section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin: 1.25rem 0 8px; }
+
+    /* Badges */
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+    .badge-purple { background: var(--purple-50); color: var(--purple-800); }
+    .badge-green { background: var(--green-50); color: var(--green-800); }
+    .badge-amber { background: var(--amber-50); color: var(--amber-800); }
+    .badge-red { background: var(--red-50); color: var(--red-800); }
+    .badge-lg { font-size: 14px; padding: 5px 14px; }
+
+    /* Strategy blocks */
+    .strategy-block { background: var(--bg-secondary); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; }
+    .strategy-block .sl { font-size: 13px; font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .strategy-block p, .strategy-block .body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* Score bars */
+    .score-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .score-bar .slabel { font-size: 13px; color: var(--text-secondary); min-width: 140px; }
+    .bar-track { flex: 1; height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; }
+    .score-num { font-size: 13px; font-weight: 600; min-width: 32px; text-align: right; }
+
+    /* Redline items */
+    .redline-item { border-left: 3px solid var(--red-400); background: var(--bg); border: 0.5px solid var(--border); border-left: 3px solid var(--red-400); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 16px; margin-bottom: 10px; }
+    .redline-item.major { border-left-color: var(--amber-400); }
+    .redline-item.minor { border-left-color: var(--purple-600); }
+    .ri-clause { font-size: 14px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .ri-quote { font-size: 12px; font-style: italic; color: var(--text-secondary); margin: 6px 0; padding: 8px 12px; background: var(--bg-secondary); border-radius: var(--radius); line-height: 1.5; }
+    .ri-issue { font-size: 13px; color: var(--red-600); line-height: 1.6; margin-bottom: 4px; }
+    .ri-issue.major { color: #854F0B; }
+    .ri-issue.minor { color: var(--purple-800); }
+    .ri-basis { font-size: 11px; color: var(--text-tertiary); margin-bottom: 8px; }
+    .ri-rec { font-size: 13px; color: var(--text-secondary); line-height: 1.6; padding: 10px 12px; background: var(--bg-secondary); border-radius: var(--radius); margin-top: 8px; }
+    .ri-rec strong { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 4px; color: var(--text-tertiary); }
+
+    /* Summary strip */
+    .summary-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+
+    /* Positive / missing */
+    .item-good { font-size: 13px; padding: 7px 0 7px 14px; border-left: 2px solid #639922; margin-bottom: 6px; color: var(--text-secondary); line-height: 1.5; }
+    .item-warn { font-size: 13px; padding: 7px 0 7px 14px; border-left: 2px solid var(--amber-400); margin-bottom: 6px; color: var(--text-secondary); line-height: 1.5; }
+    .item-risk { font-size: 13px; padding: 7px 0 7px 14px; border-left: 2px solid var(--red-400); margin-bottom: 6px; color: var(--text-secondary); line-height: 1.5; }
+
+    /* Error */
+    .error-msg { background: var(--red-50); color: var(--red-800); border: 0.5px solid var(--red-400); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; margin-top: 1rem; }
+
+    /* Big score */
+    .big-score { font-size: 36px; font-weight: 700; line-height: 1; }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .header-sub { display: none; }
+      .main { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo"><i class="ti ti-file-certificate" aria-label="logo"></i></div>
+  <h1>Doula Contract Hub</h1>
+  <span class="header-sub">— Payer strategy &amp; contract redlining</span>
+  <div class="header-spacer"></div>
+  <span class="header-state">CA &amp; WA</span>
+</header>
+
+<main class="main">
+  <div class="tabs" role="tablist">
+    <button class="tab active" role="tab" aria-selected="true" onclick="switchTab('strategy', this)">
+      <i class="ti ti-wand" aria-hidden="true"></i> Contract strategy
+    </button>
+    <button class="tab" role="tab" aria-selected="false" onclick="switchTab('redline', this)">
+      <i class="ti ti-file-search" aria-hidden="true"></i> Redline a contract
+    </button>
+  </div>
+
+  <!-- STRATEGY PANEL -->
+  <div id="panel-strategy" class="panel active" role="tabpanel">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-building-bank" aria-hidden="true"></i> Payer information</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="s-payer">Payer name</label>
+          <input type="text" id="s-payer" placeholder="e.g. Molina, Medi-Cal, Premera" />
+        </div>
+        <div class="form-group">
+          <label for="s-state">State</label>
+          <select id="s-state">
+            <option value="">Select state</option>
+            <option value="CA">California</option>
+            <option value="WA">Washington</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="s-type">Payer type</label>
+          <select id="s-type">
+            <option value="">Select type</option>
+            <option>Medicaid managed care (MCO)</option>
+            <option>Commercial / private insurance</option>
+            <option>CHIP</option>
+            <option>Medicare Advantage</option>
+            <option>Self-funded employer plan (ERISA)</option>
+            <option>Tribal health program</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="s-paymodel">Their preferred payment model</label>
+          <select id="s-paymodel">
+            <option value="">Unknown / not sure</option>
+            <option>Fee-for-service (FFS)</option>
+            <option>Global fee / bundled</option>
+            <option>Per member per month (PMPM)</option>
+            <option>Case rate</option>
+            <option>Value-based / shared savings</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="s-lives">Estimated member lives</label>
+          <input type="text" id="s-lives" placeholder="e.g. 50,000" />
+        </div>
+        <div class="form-group">
+          <label for="s-births">Est. annual births in network</label>
+          <input type="text" id="s-births" placeholder="e.g. 2,000" />
+        </div>
+        <div class="form-group">
+          <label for="s-coverage">Do they currently cover doula services?</label>
+          <select id="s-coverage">
+            <option value="">Unknown</option>
+            <option>Yes — existing benefit</option>
+            <option>No — we'd be first</option>
+            <option>Pilot / limited program</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <div class="toggle-row" style="padding-top: 6px;">
+            <input type="checkbox" id="s-equity" />
+            <label for="s-equity">Payer has stated health equity / SDOH goals</label>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label for="s-hedis">Their HEDIS / quality priorities (hold Ctrl/Cmd for multiple)</label>
+          <select id="s-hedis" multiple>
+            <option>Prenatal care initiation (PC-01)</option>
+            <option>C-section rate reduction</option>
+            <option>NICU admissions reduction</option>
+            <option>Postpartum depression screening</option>
+            <option>Preterm birth rate</option>
+            <option>Black maternal mortality / equity</option>
+            <option>Well-child visits</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label for="s-notes">Additional context</label>
+          <textarea id="s-notes" placeholder="e.g. They want a pilot first. They mentioned rates are locked to Medicaid fee schedule. They have an existing doula vendor..."></textarea>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="s-btn" onclick="runStrategy()">
+        <i class="ti ti-sparkles" aria-hidden="true"></i> Build contract strategy
+      </button>
+      <div class="loading" id="s-loading"><div class="spinner"></div> Analyzing payer and building strategy...</div>
+      <div id="s-error"></div>
+    </div>
+    <div id="s-result"></div>
+  </div>
+
+  <!-- REDLINE PANEL -->
+  <div id="panel-redline" class="panel" role="tabpanel">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-file-search" aria-hidden="true"></i> Contract to redline</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="r-payer">Payer name (optional)</label>
+          <input type="text" id="r-payer" placeholder="e.g. Molina Healthcare" />
+        </div>
+        <div class="form-group">
+          <label for="r-state">State</label>
+          <select id="r-state">
+            <option value="">Select state</option>
+            <option value="CA">California</option>
+            <option value="WA">Washington</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label for="r-contract">Contract text — paste the full contract or specific sections</label>
+          <textarea id="r-contract" style="min-height: 240px;" placeholder="Paste contract language here. You can paste the whole thing or individual sections.&#10;&#10;Key sections to include:&#10;• Payment terms &amp; fee schedule&#10;• Termination clauses&#10;• Scope of services definition&#10;• Credentialing / recredentialing requirements&#10;• Audit &amp; recoupment provisions&#10;• Non-compete or exclusivity language&#10;• Rate adjustment / CPI language&#10;• Indemnification &amp; hold harmless&#10;• Amendment procedures"></textarea>
+        </div>
+        <div class="form-group full">
+          <div class="toggle-row">
+            <input type="checkbox" id="r-aggressive" />
+            <label for="r-aggressive">Aggressive mode — flag anything that could be used against us, even if minor</label>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="r-btn" onclick="runRedline()">
+        <i class="ti ti-eye" aria-hidden="true"></i> Redline this contract
+      </button>
+      <div class="loading" id="r-loading"><div class="spinner"></div> Reading contract and flagging payer-favorable clauses...</div>
+      <div id="r-error"></div>
+    </div>
+    <div id="r-result"></div>
+  </div>
+</main>
+
+<script>
+  // ── Config ──────────────────────────────────────────────
+  // In production this is just "/api/claude" — same origin, no key needed in browser.
+  const API_URL = "/api/claude";
+
+  // ── Tab switching ────────────────────────────────────────
+  function switchTab(id, btn) {
+    document.querySelectorAll(".tab").forEach(t => { t.classList.remove("active"); t.setAttribute("aria-selected","false"); });
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    btn.setAttribute("aria-selected","true");
+    document.getElementById("panel-" + id).classList.add("active");
+  }
+
+  // ── API call (to your own backend, no key in browser) ───
+  async function callAPI(mode, prompt) {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode, prompt })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Server error. Please try again.");
+    }
+    const data = await res.json();
+    return JSON.parse(data.result);
+  }
+
+  // ── Utilities ────────────────────────────────────────────
+  function scoreColor(v) {
+    if (v >= 7) return "#639922";
+    if (v >= 4) return "#EF9F27";
+    return "#E24B4A";
+  }
+
+  function severityBadge(s) {
+    const map = { critical: "badge-red", major: "badge-amber", minor: "badge-purple" };
+    const labels = { critical: "Critical", major: "Major", minor: "Minor" };
+    return `<span class="badge ${map[s] || "badge-purple"}">${labels[s] || s}</span>`;
+  }
+
+  function priorityBadge(p) {
+    const map = { high: "badge-red", medium: "badge-amber", low: "badge-purple" };
+    return `<span class="badge ${map[p] || "badge-purple"}">${p}</span>`;
+  }
+
+  function showError(elId, msg) {
+    document.getElementById(elId).innerHTML = `<div class="error-msg"><i class="ti ti-alert-circle"></i> ${msg}</div>`;
+  }
+
+  // ── Strategy ─────────────────────────────────────────────
+  async function runStrategy() {
+    const payer = document.getElementById("s-payer").value.trim();
+    const state = document.getElementById("s-state").value;
+    if (!payer || !state) { alert("Please enter payer name and state."); return; }
+
+    const hedis = Array.from(document.getElementById("s-hedis").selectedOptions).map(o => o.value);
+
+    const prompt = `Build a contract strategy for:
+Payer: ${payer}
+State: ${state === "CA" ? "California" : "Washington"}
+Payer type: ${document.getElementById("s-type").value || "Unknown"}
+Their preferred payment model: ${document.getElementById("s-paymodel").value || "Unknown"}
+Member lives: ${document.getElementById("s-lives").value || "Unknown"}
+Annual births in network: ${document.getElementById("s-births").value || "Unknown"}
+Currently covers doula services: ${document.getElementById("s-coverage").value || "Unknown"}
+HEDIS/quality priorities: ${hedis.length ? hedis.join(", ") : "None specified"}
+Health equity stated goal: ${document.getElementById("s-equity").checked ? "Yes" : "No"}
+Additional context: ${document.getElementById("s-notes").value || "None"}`;
+
+    const btn = document.getElementById("s-btn");
+    btn.disabled = true;
+    document.getElementById("s-loading").style.display = "flex";
+    document.getElementById("s-result").innerHTML = "";
+    document.getElementById("s-error").innerHTML = "";
+
+    try {
+      const d = await callAPI("strategy", prompt);
+      renderStrategy(d, payer, state);
+    } catch(e) {
+      showError("s-error", e.message);
+    } finally {
+      btn.disabled = false;
+      document.getElementById("s-loading").style.display = "none";
+    }
+  }
+
+  function renderStrategy(d, payer, state) {
+    const st = d.strength_score || {};
+    let html = `<div class="card">
+      <div class="card-title"><i class="ti ti-file-check"></i> Strategy — ${payer} (${state})</div>
+      <div class="result-header">
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:6px;">Recommended model</div>
+          <span class="badge badge-purple badge-lg">${d.recommended_model || "TBD"}</span>
+        </div>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;flex:1;">${d.model_rationale || ""}</p>
+      </div>`;
+
+    if (st.leverage !== undefined) {
+      html += `<div class="section-label">Negotiation strength</div>`;
+      [["leverage","Leverage"],["market_timing","Market timing"],["value_story","Value story"]].forEach(([k,label]) => {
+        const v = Math.round(st[k] || 0);
+        html += `<div class="score-bar">
+          <span class="slabel">${label}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${v*10}%;background:${scoreColor(v)};"></div></div>
+          <span class="score-num" style="color:${scoreColor(v)};">${v}/10</span>
+        </div>`;
+      });
+    }
+
+    if (d.rate_recommendation) {
+      html += `<div class="section-label">Rate recommendation</div>
+        <div class="strategy-block"><p>${d.rate_recommendation}</p></div>`;
+    }
+
+    if (d.negotiation_leverage?.length) {
+      html += `<div class="section-label">Leverage points</div>`;
+      d.negotiation_leverage.forEach(l => {
+        html += `<div class="strategy-block"><div class="sl"><i class="ti ti-arrow-right" style="color:var(--purple-600);font-size:13px;"></i> ${l}</div></div>`;
+      });
+    }
+
+    if (d.key_contract_terms?.length) {
+      html += `<div class="section-label">Key terms to negotiate</div>`;
+      d.key_contract_terms.forEach(t => {
+        html += `<div class="strategy-block"><div class="sl">${priorityBadge(t.priority)} ${t.term}</div><p>${t.recommendation}</p></div>`;
+      });
+    }
+
+    if (d.state_specific) {
+      html += `<div class="section-label">State-specific (${state})</div>
+        <div class="strategy-block"><p>${d.state_specific}</p></div>`;
+    }
+
+    if (d.pilot_strategy) {
+      html += `<div class="section-label">Pilot strategy</div>
+        <div class="strategy-block"><p>${d.pilot_strategy}</p></div>`;
+    }
+
+    if (d.risk_flags?.length) {
+      html += `<div class="section-label">Risk flags</div>`;
+      d.risk_flags.forEach(r => { html += `<div class="item-risk">${r}</div>`; });
+    }
+
+    html += `</div>`;
+    document.getElementById("s-result").innerHTML = html;
+  }
+
+  // ── Redline ──────────────────────────────────────────────
+  async function runRedline() {
+    const contract = document.getElementById("r-contract").value.trim();
+    if (!contract || contract.length < 50) { alert("Please paste contract text to redline."); return; }
+
+    const payer = document.getElementById("r-payer").value.trim();
+    const state = document.getElementById("r-state").value;
+    const aggressive = document.getElementById("r-aggressive").checked;
+
+    const prompt = `Redline this payer contract${payer ? ` from ${payer}` : ""}${state ? ` in ${state === "CA" ? "California" : "Washington state"}` : ""}.
+We are a doula services provider organization. ${aggressive ? "Flag everything that could potentially be used against us, even minor issues." : "Focus on clauses that materially harm the provider."}
+
+CONTRACT TEXT:
+${contract}`;
+
+    const btn = document.getElementById("r-btn");
+    btn.disabled = true;
+    document.getElementById("r-loading").style.display = "flex";
+    document.getElementById("r-result").innerHTML = "";
+    document.getElementById("r-error").innerHTML = "";
+
+    try {
+      const d = await callAPI("redline", prompt);
+      renderRedline(d, payer);
+    } catch(e) {
+      showError("r-error", e.message);
+    } finally {
+      btn.disabled = false;
+      document.getElementById("r-loading").style.display = "none";
+    }
+  }
+
+  function renderRedline(d, payer) {
+    const score = d.payer_favor_score || 0;
+    const critical = (d.redlines || []).filter(r => r.severity === "critical");
+    const major = (d.redlines || []).filter(r => r.severity === "major");
+    const minor = (d.redlines || []).filter(r => r.severity === "minor");
+
+    let html = `<div class="card">
+      <div class="card-title"><i class="ti ti-file-search"></i> Redline results${payer ? " — " + payer : ""}</div>
+      <div class="result-header">
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:4px;">Payer-favor score</div>
+          <span class="big-score" style="color:${scoreColor(score)};">${score}<span style="font-size:20px;font-weight:400;">/10</span></span>
+        </div>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;flex:1;">${d.overall_assessment || ""}</p>
+      </div>
+      <div class="summary-strip">
+        ${critical.length ? `<span class="badge badge-red"><i class="ti ti-alert-circle"></i> ${critical.length} critical</span>` : ""}
+        ${major.length ? `<span class="badge badge-amber">${major.length} major</span>` : ""}
+        ${minor.length ? `<span class="badge badge-purple">${minor.length} minor</span>` : ""}
+      </div>`;
+
+    if (d.redlines?.length) {
+      html += `<div class="section-label">Flagged clauses</div>`;
+      d.redlines.forEach(r => {
+        const cls = r.severity === "critical" ? "" : r.severity === "major" ? "major" : "minor";
+        html += `<div class="redline-item ${cls}">
+          <div class="ri-clause">${severityBadge(r.severity)} ${r.clause_name}</div>
+          ${r.quoted_language ? `<div class="ri-quote">"${r.quoted_language}"</div>` : ""}
+          <div class="ri-issue ${cls}"><i class="ti ti-alert-triangle" style="font-size:13px;vertical-align:-1px;margin-right:4px;"></i>${r.issue}</div>
+          ${r.legal_basis ? `<div class="ri-basis"><i class="ti ti-scale" style="font-size:12px;vertical-align:-1px;margin-right:4px;"></i>${r.legal_basis}</div>` : ""}
+          <div class="ri-rec"><strong>Suggested redline language</strong>${r.recommended_language}</div>
+        </div>`;
+      });
+    }
+
+    if (d.missing_protections?.length) {
+      html += `<div class="section-label">Missing protections — add these</div>`;
+      d.missing_protections.forEach(m => { html += `<div class="item-warn">${m}</div>`; });
+    }
+
+    if (d.positive_terms?.length) {
+      html += `<div class="section-label">Terms in your favor — keep these</div>`;
+      d.positive_terms.forEach(p => { html += `<div class="item-good">${p}</div>`; });
+    }
+
+    html += `</div>`;
+    document.getElementById("r-result").innerHTML = html;
+  }
+</script>
+</body>
+</html>
