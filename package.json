@@ -1,0 +1,15 @@
+{
+  "name": "doula-contract-hub",
+  "version": "1.0.0",
+  "description": "Doula payer contract strategy and redlining tool",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0"
+  },
+  "devDependencies": {
+    "vercel": "^34.0.0"
+  }
+}
